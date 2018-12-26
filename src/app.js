@@ -51,21 +51,17 @@ class App extends Component {
   }
   getToken = () => {
     return new Promise((resolve, reject) => {
-      // 登录
-      wx.login({
+      wx.login({ // 登录
         success: res => {
-          // 发送 res.code 到后台换取 openId, sessionKey, unionId
-          if (res.code) {
-            //发送res.code 到后台
-            wx.request({
+          if (res.code) { // 发送 res.code 到后台换取 openId, sessionKey, unionId
+            wx.request({ // 发送res.code 到后台
               url: `${path.dev}/api/login`,
               method: 'POST',
               data: {
                 code: res.code
               },
               success(res) {
-                //成功返回数据后，将token值存储到localStorage中
-                wx.setStorage({
+                wx.setStorage({ // 成功返回数据后，将token值存储到localStorage中
                   key: 'yerlLocalToken',
                   data: res.data.token
                 });
