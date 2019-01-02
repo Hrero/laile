@@ -188,7 +188,7 @@ class Index extends Component {
   componentDidMount() {
 
     Taro.request({
-      url: `${path.dev}/api/getDissSelect`,
+      url: `${path.dev}/company/getDissSelect`,
       method: "POST",
     }).then(res => {
       let newArr = res.data.data.map(x => {
