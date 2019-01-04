@@ -3,6 +3,7 @@ import { View, Button, Text, Picker } from '@tarojs/components'
 import { AtButton, AtInput, AtForm,  AtCheckbox, Rate, AtTextarea, AtToast, AtList, AtListItem } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import { add, minus, asyncAdd   } from '../../actions/counter'
+import { apiAddStarApi, apiGetRankingListApi }  from '../../api/company'
 import path  from '../../utils/host'
 console.log(path, '-----')
 
@@ -35,23 +36,21 @@ class Index extends Component {
     }
   }
   getMaxList = () => {
-    Taro.request({
-      url: `${path.dev}/api/getRankingList`,
-      method: "POST",
-    }).then(res => {
+    apiGetRankingListApi().then(res => {
       this.setState({
         list: res.data
       })
     })
   }
   handleClick(x) {
-    Taro.request({
-      url: `${path.dev}/api/addStar`,
-      data:{id: Number(x.id), star: Number(++x.star)},
-      method: "POST",
-    }).then(res => {
+    apiAddStarApi({id: Number(x.id), star: Number(++x.star), openid: wx.getStorageSync('openid')}).then(res => {
       if (res.data.result) {
         this.getMaxList()
+        this.message({
+          isOpened: true,
+          infoMessage: res.data.msg
+        })
+      } else {
         this.message({
           isOpened: true,
           infoMessage: res.data.msg

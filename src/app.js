@@ -1,6 +1,7 @@
 import '@tarojs/async-await'
 import Taro, { Component } from '@tarojs/taro'
 import { Provider } from '@tarojs/redux'
+import { usersLoginApi } from './api/company'
 import path  from './utils/host'
 
 import Index from './pages/index'
@@ -45,31 +46,30 @@ class App extends Component {
       navigationBarTextStyle: 'black'
     }
   }
-
   componentDidMount () {
-    this.getToken()
+    this.getToken().then((result) => {
+      if (result === '更新成功') {
+        console.log('更新成功')
+      } else {
+        console.log('登录成功')
+      }
+    })
   }
   getToken = () => {
     return new Promise((resolve, reject) => {
       wx.login({ // 登录
         success: res => {
           if (res.code) { // 发送 res.code 到后台换取 openId, sessionKey, unionId
-            wx.request({ // 发送res.code 到后台
-              url: `${path.dev}/api/login`,
-              method: 'POST',
-              data: {
-                code: res.code
-              },
-              success(res) {
-                wx.setStorage({ // 成功返回数据后，将token值存储到localStorage中
-                  key: 'yerlLocalToken',
-                  data: res.data.token
-                });
-                resolve()
-              },
-              fail() {
-                reject();
-              }
+            usersLoginApi({
+              code: res.code
+            }).then(data => {
+              wx.setStorage({ // 成功返回数据后，将token值存储到localStorage中
+                key: 'openid',
+                data: res.data.data.openid
+              })
+              resolve(res.data.data.msg)
+            }).catch(error => {
+              reject();
             })
           }
         }

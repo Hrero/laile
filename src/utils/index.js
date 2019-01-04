@@ -17,4 +17,4 @@ export function getTime(time) {
     const s = date.getSeconds()
     const T = Y + M + D + h + m + s
     return T
-  }
+}

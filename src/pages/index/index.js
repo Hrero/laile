@@ -3,8 +3,8 @@ import { View, Button, Text, Picker } from '@tarojs/components'
 import { AtButton, AtInput, AtForm,  AtCheckbox, Rate, AtTextarea, AtToast } from 'taro-ui'
 import { connect } from '@tarojs/redux'
 import { add, minus, asyncAdd   } from '../../actions/counter'
-import path  from '../../utils/host'
-console.log(path, '-----')
+import { apiGetDissSelectApi, apiAddCompanyApi }  from '../../api/company'
+import { EventUtil }  from '../../utils/utils'
 import './index.scss'
 
 @connect(({ counter }) => ({
@@ -100,7 +100,6 @@ class Index extends Component {
     console.log(1)
   }
   onSubmit (event) {
-    console.log(this.state)
     if (!this.state.name || !this.state.num || !(this.state.checkedList.length > 0)) {
       this.message({
         isOpened: true,
@@ -108,16 +107,11 @@ class Index extends Component {
       })
       return false
     } else {
-      
       let params = {
         name: this.state.name, number: this.laiulea(this.state.num), region: this.state.multiChecked, isGoOut: this.guolv(this.state.selectorChecked), hopeGoOut: this.hopeGuolv(this.state.selfSelectorChecked),
         existence: 0, diss: JSON.stringify(this.state.checkedList), talk: this.state.textarea, star: 0
       }
-      Taro.request({
-        url: `${path.dev}/api/addCompany`,
-        method: "POST",
-        data: params,
-      }).then(res => {
+      apiAddCompanyApi(params).then(res => {
         if (res.data.result) {
           this.setState({
             name: ''
@@ -186,11 +180,7 @@ class Index extends Component {
     }
   }
   componentDidMount() {
-
-    Taro.request({
-      url: `${path.dev}/api/getDissSelect`,
-      method: "POST",
-    }).then(res => {
+    apiGetDissSelectApi().then(res => {
       let newArr = res.data.data.map(x => {
         return {
           value: Number(x.value),
